@@ -20,3 +20,26 @@ model Admin{
     deletedAt  DateTime?
     
 }
+
+model Counter{
+    id          Int     @id @default(autoincrement())
+    name        String  @unique @db.VarChar(255)
+    currentQueue Int     @default(0)
+    maxQueue    Int     @default(99)
+    queues     Queue[]
+    isActive   Boolean @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    deletedAt   DateTime?
+}
+
+model Queue{
+    id          Int     @id @default(autoincrement())
+    number      Int     @unique
+    status      String  @default("waiting") @db.VarChar(50)
+    counterId   Int
+    counter     Counter @relation(fields: [counterId], references: [id])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+}

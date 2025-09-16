@@ -1,35 +1,70 @@
-import { PrismaClient } from "@prisma/client";
-import { NextFunction, Router, Request, Response } from "express";
-const prisma = new PrismaClient();
-const router = Router();
+import { Request, Response, NextFunction } from "express";
+import {
+  SLogin,
+  SCreateAdmin,
+  SUpdateAdmin,
+  SDeleteAdmin,
+} from "../services/admin.service.js";
 
-export const CLoginAdmin  =  async (req: Request, res: Response, _next: NextFunction) => {
+export const CLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
     const { username, password } = req.body;
+    const result = await SLogin(username, password);
 
-    const user = await prisma.admin.findUnique({
-        where: { username: username}
-    });
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    if(!user){
-        return res.status(404).json({
-            message: "User not found"
-        });
-    }
+export const CCreateAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { username, password, email, name } = req.body;
+    const result = await SCreateAdmin(username, email, name, password);
 
-    if(!user.isActive || user.deletedAt){
-        return res.status(404).json({
-            message: "User is inactive or deleted"
-        });
-    }
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    if(user.password !== password){
-        return res.status(404).json({
-            message: "Invalid Credentials"
-        });
-    }
-    return res.status(200).json({
-        message: "Login successful",
-        data: { id: user.id, username: user.username,email: user.email,name: user.name }
-    });
-         
+export const CUpdateAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const id = parseInt(req.params.id);
+    const { username, password, email, name } = req.body;
+
+    const result = await SUpdateAdmin(id, username, email, name, password);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const CDeleteAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const id = parseInt(req.params.id);
+
+    const result = await SDeleteAdmin(id);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
 };

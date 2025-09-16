@@ -1,9 +1,19 @@
-import { NextFunction, Router, Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import { CLoginAdmin } from "../controllers/auth.controller.js";
+import { Router } from "express";
+import {
+  CLogin,
+  CCreateAdmin,
+  CUpdateAdmin,
+  CDeleteAdmin,
+} from "../controllers/auth.controller.js";
 
 const router = Router();
-const prisma = new PrismaClient();
 
-router.post("/login", CLoginAdmin);
+router.post("/login", CLogin);
+
+router.post("/create", CCreateAdmin);
+
+router.put("/:id", CUpdateAdmin);
+
+router.delete("/:id", CDeleteAdmin);
+
 export default router;
